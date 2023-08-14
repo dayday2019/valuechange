@@ -4,6 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod valuechange {
+    use ink_prelude::string::String;
 
     /// Defines the storage of your contract.
     /// Add new fields to the below struct in order
@@ -14,6 +15,13 @@ mod valuechange {
         value: bool,
         score: u64,
     }
+
+
+    #[ink(event)]
+    pub struct ScoreReturn {
+        pub score: u64,
+    }
+
 
     impl Valuechange {
         /// Constructor that initializes the `bool` value to the given `init_value`.
@@ -48,6 +56,10 @@ mod valuechange {
         pub fn add_score(&mut self) {
             self.score = self.score+1;
             ink_env::debug_println!("更新后的 score: {} 区块高度: {}",self.score,self.env().block_number());
+            // 通过事件返回值。对于涉及到修改合约存储项的操作，需要使用事件返回值。
+            self.env().emit_event(ScoreReturn {
+                score: self.score,
+            });
         }
 
         #[ink(message)]
